@@ -14,7 +14,9 @@ Running ``make prep`` or ``make prep?`` for the first time causes automacs to ch
 
 You can override the global configuration with a local one, written to ``./gromacs_config.py``, by running ``make gromacs_config local``, or by copying the file to the automacs root directory yourself. 
 
-.. finish this
+.. warning ::
+	
+	finish this
 
 Code configuration
 ------------------
@@ -34,6 +36,10 @@ The ``config.py`` file will change as you add modules and interface functions. A
 
 **Running commands** Another item in the ``config.py`` dictionary is called ``commands``. It provides explicit paths to python scripts containing command-line interface functions described in the :any:`interface <interface>` section.
 
+.. warning ::
+
+	describe the bootstrapping here
+
 .. simulation_source_material :
 
 Simulation source material
@@ -43,6 +49,10 @@ Starting simulations often requires starting configurations such as a protein cr
 
 Initial setup
 -------------
+
+.. warning ::
+
+	delete this section in favor of the bootstrap explanation above
 
 Automacs can natively simulate proteins in water without modification. The ``make prep protein`` routine will run a simulation of any `pdb <http://www.rcsb.org/pdb/home/home.do>`_ file found directly in the ``inputs`` folder.
 

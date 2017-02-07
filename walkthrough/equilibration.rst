@@ -1,16 +1,15 @@
 
 .. title :: Equilibration
 
-*************
 Equilibration
-*************
+=============
 
 All molecular dynamics simulations depend very strongly on using the correct ensemble. Without it, the simulation may diverge from its target and fail to tell you anything useful. Gentle equilibration is necessary to avoid falling into metastable states which cannot be escaped in the timescale of your simulation. It is particularly important to avoid this outcome when simulating objects that have a combination of soft and stiff fluctuations -- e.g. proteins -- or complicated conformational dynamics. 
 
 Molecular dynamics tutorials often emphasize the importance of using the correct ensemble. Most starting configurations contain the user's best guess at the physical structure of a small system. However, this best guess is usually different than its equilibrated state. One major benefit of using a first-principles molecular dynamics simulation is that the integrator will help guide an unfavorable configuration towards equilibrium. Here we will describe how automacs can implement an arbitrary serires of ensemble changes in order to guide your starting structure to equilibrium and eventual production simulations.
 
 Minimization
-------------
+~~~~~~~~~~~~
 
 Minimize early and minimize often. Most starting configurations only glancingly resemble their final, equilibrated state. Energy minimization is almost always required before running molecular dynamics because it carefully reduces the number of unfavorable interactions e.g. steric clashes and abnormal bond lengths which are present in your system. 
 
@@ -39,7 +38,7 @@ For each dynamics or minimization run, GROMACS requires an input ``tpr`` file ge
 For most purposes, a standard steepest-descent minimization is sufficient. Some calculations, such as normal-mode analyses, require more intensive minimizations.
 
 Equilibration in stages
------------------------
+~~~~~~~~~~~~~~~~~~~~~~~
 
 Like the minimization function described above, equilibration procedes in pairs of preprocessor and ``mdrun`` calls. Users can implement an arbitrarily long sequence of ensemble changes using the :meth:`equilibrate <amx.procedures.common.equilibrate>` function reproduced below.
 
@@ -83,7 +82,7 @@ Every equilibration procedure concludes with a production run based on an input 
 .. _mdp_parameters:
 
 Parameters
-----------
+~~~~~~~~~~
 
 A series of ensemble changes requires a large set of integrator parameters organized into ``mdp`` files. In most cases, however, these individual files resemble each other, differing only slightly between ensembles. Radically changing the integrator parameters is dangerous because it is more likely to produce unfavorable interactions. The most common examples of a ensemble changes include "turning on" a thermodynamic coupling algorithm (e.g. pressure coupling which allows volume to change) or modifying the timestep of the integrator. In some complicated cases, the equilibrate function is used to construct a system with very particular constraints (see the lipid vacuum-packing procedure for a complete example). But otherwise, ensemble changes should be minor.
 
@@ -185,6 +184,6 @@ Users may also point to custom parameter sets by including their names in the co
 The example ``mdp_specs`` described above demonstrates the utility of this bookkeeping scheme. If you wish to generate many similar parameter files during an elaborate equilibration routine, you only need to add additional entries to ``mdp_specs``.
 
 Ensemble or integrator changes during production
-------------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 While most ensemble changes occur during the construction and equilibration of a new simulation, it is often useful to change the ensemble for a completed or already-running simulation. For example, older simulations can be continued under newer versions of GROMACS by regenerating new run input files. This feature is built-in to automacs via the ``amx/procedures/scripts/script-restart.py``. Users can research from a preexisting simulation stored in ``inputs`` by running ``make program restart`` and customizing the resulting parent script found in ``script-restart.py``. This script has options for continuing a simulation from "scratch" (that is, the structure and topology onl) or from a checkpoint file, which often makes it possible to do a binary-reproducible simulation. The automacs restart procedure covers most of the functions described in the GROMACS manual entry on `continuation <http://www.gromacs.org/Documentation/How-tos/Doing_Restarts>`_.
