@@ -4,12 +4,12 @@
 Concept
 =======
 
-Automacs is a set of python codes which prepares molecular simulations using common tools, namely `GROMACS <http://www.gromacs.org/>`_ and `CHARMM <http://www.charmm.org/>`_. The purpose of this project is to ensure that simulations are prepared according to a standard method which also bundles simulation data with careful documentation. Automacs (hopefully) makes it possible to generate large simulation datasets with a minimum of description and so-called "manual" labor which invites mistakes and wastes time. Automacs codes are meant to be cloned once for each simulation rather than installed in a central location. This means that each simulation has a copy of the code used to create it.
+Automacs is a set of python codes which prepares molecular simulations using common tools, namely `GROMACS <http://www.gromacs.org/>`_. The purpose of this project is to ensure that simulations are prepared according to a standard method which also bundles simulation data with careful documentation. Automacs (hopefully) makes it possible to generate large simulation datasets with a minimum of description and so-called "manual" labor which invites mistakes and wastes time. Automacs codes are meant to be cloned once for each simulation rather than installed in a central location. This means that each simulation has a copy of the code used to create it.
 
 "Overloaded Python"
 -------------------
 
-High-level programming languages often rely on functions which can accept many different kinds of input while producing a consistent result. This is called `overloading <https://en.wikipedia.org/wiki/Function_overloading>`_. The automacs codes are overloaded in two ways. First, simulation data -- files, directories, etc -- for different procedures are organized in a uniform way. These file-naming conventions are described in the :doc:`framework <framework>`. Users who follow these rules can benefit from generic functions that apply to many different simulation types. For example, performing restarts or ensemble changes in GROMACS uses a single generic procedure, regardless of whether you are doing atomistic or coarse-grained simulations. Second, the procedure codes are organized to reflect the consistent naming conventions so that they can be used in as many situations as possible. The simulation-specific settings are separated from the generic, modular steps required to build a simulation so that users can simulate a variety of different systems without rewriting any code. In the next section, we will describe how this separation happens.
+High-level programming languages often rely on functions which can accept many different kinds of input while producing a consistent result. This is called `overloading <https://en.wikipedia.org/wiki/Function_overloading>`_. The automacs codes are overloaded in two ways. First, simulation data --- files, directories, etc --- for different procedures are organized in a uniform way. These file-naming conventions are described in the :doc:`framework <framework>`. Users who follow these rules can benefit from generic functions that apply to many different simulation types. For example, performing restarts or ensemble changes in GROMACS uses a single generic procedure, regardless of whether you are doing atomistic or coarse-grained simulations. Second, the procedure codes are organized to reflect the consistent naming conventions so that they can be used in as many situations as possible. The simulation-specific settings are separated from the generic, modular steps required to build a simulation so that users can simulate a variety of different systems without rewriting any code. In the next section, we will describe how this separation happens.
 
 .. _concept_procedures:
 
@@ -19,7 +19,17 @@ Procedures
 .. ! really only one way ...
 .. ! replace all uses of "configuration" with acme.
 
-Automacs executes code in an extremely straightforward way: users first request an experiment, and then they run it. After you clone automacs, you can run a simulation with a few simple `make <https://www.gnu.org/software/make/>`_ commands.
+Automacs executes code in an extremely straightforward way: users first request an experiment, and then they run it. After you clone automacs, you can run a simulation with a single `make <https://www.gnu.org/software/make/>`_ command.
+
+.. code-block :: bash
+  
+  make go protein restart
+
+.. warning ::
+
+  Change to "go" vs "manual" above. Point to three types of runs in the experiments section.
+
+This command does three things: it clears the data, prepares a new script, and then runs it. You could do this more explicitly by running the following commands.
 
 .. code-block :: bash
   
@@ -27,28 +37,28 @@ Automacs executes code in an extremely straightforward way: users first request 
   make prep protein
   make run
 
-.. warning ::
+We always start by cleaning up the data from a previous run --- all useful data should be archived in a completed copy of automacs. The ``make prep`` command lists all of the available experiments, which are detected according to instructions in the configuration. An experiment identifies the script you wish to run (we sometimes call them "procedures"), and how the simulation should be customized. In the example above, we choose the "protein" experiment. The ``make prep protein`` command finds the right procedure script and copies it to ``script.py`` in the root folder. It also collects the customizations and writes them to an experiment file called ``expt.json``, which will be discussed in the next section.
 
-  Change to "go" vs "manual" above. Point to three types of runs in the experiments section.
+**Note** New users who are trying this software for the first time can try items in the test set by running e.g. ``make clean && make go protein``. You can then take a look at ``script.py`` to see what the experiment looks like. The customizations can be viewed in three places. The experiment file ``amx/proteins/protein_expts.py`` is the source which generates the ``expt.json`` with a few extra parameters. You can also run ``make look`` which starts a python terminal with the ``state`` variable, which you can read directly (it's a dictionary, but you can use the dot operator like a class to look at e.g. ``state.step``). Of these three options, the experiment file is the best place to change the parameters. We have combined everything into one step using ``make go`` to simplify things, however automacs has a fairly minimal interface, and users can run the automacs scripts with only an ``expt.json`` file and the associated python modules.
 
-We always start by cleaning up the data from a previous run --- all useful data should be archived in a completed copy of automacs. The `make prep?` command lists all of the available experiments, which are detected according to instructions in the configuration. An experiment contains information on which script to run (we sometimes call them "procedures"), and how this execution should be customized. In the example above, we choose the "protein" experiment. The `make prep protein` command finds the right script and copies it to ``script.py`` in the root folder. It also collects the customizations and writes them to an experiment file called ``expt.json``, which will be discussed in the next section.
+.. give a quickstart for the protein simulation by telling the user to make a new experiment. possibly consider automating this. is the exposition above too much?
 
-At this point, you could simply run ``python script.py`` and if everything were in order, the simulation would run to completion. In this basic use-case, automacs has simply organized some code for you. In practice, few codes, especially those under active development, run perfectly the first time. To make development easier, and to save a record of everything automacs does, we use ``make run`` to supervise the exection of ``script.py``. We will explain this in detail in the section :ref:`supervised execution <sec_supervised_execution>` below.
+After you use the ``prep`` command to choose a procedure, you could simply run ``python script.py`` and if everything were in order, the simulation would run to completion. In this basic use-case, automacs has simply organized some code for you. In practice, only the most mature codes run perfectly the first time. To make development easier, and to save a record of everything automacs does, we use ``make run`` to supervise the exection of ``script.py``. We will explain this in detail in the section :ref:`supervised execution <sec_supervised_execution>` below.
 
 Procedure scripts
 ~~~~~~~~~~~~~~~~~
 
-Procedure scripts are standard python scripts which must only import a single package into the global namespace.
+Procedure scripts (sometimes we call these "parent scripts") are standard python scripts which must only import a single package into the global namespace.
 
 .. code-block :: python
 
   from amx import *
 
-Using ``import *`` may be somewhat un-Pythonic, however it allows our scripts to read like lab notebooks for running computational experiments, and it generally makes them much more concise. The automacs import scheme does a lot of bookkeeping work for you behind the scenes. It reads the experiment, imports required modules that are attached to your local copy of automacs, and also ensures that all of your codes (functions, classes, etc) have access to a namespace variable called ``state``. The ``state`` variable (along with its partners: ``expt`` and ``settings``, which will be discussed later), effectively solves the problem of passing information between functions. Any function can read or write to the state, which is carefully passed to new codes and written to disk when the simulation is completed.
+Using ``import *`` may be somewhat un-Pythonic, however it allows our scripts to read like an entry in a lab notebook for running a computational experiment, and it generally makes them much more concise. The automacs import scheme does a lot of bookkeeping work for you behind the scenes. It reads the experiment, imports required modules that are attached to your local copy of automacs, and also ensures that all of your codes (functions, classes, etc) have access to a namespace variable called ``state``. This dictionary variable (along with its partners: ``expt`` and ``settings``, which will be discussed later), effectively solves the problem of passing information between functions. Any function can read or write to the state, which is carefully passed to new codes and written to disk when the simulation is completed.
 
 The most typical script is called ``protein.py`` and generates an atomistic protein-in-water simulation.
 
-.. note that the following path is relative! no @-syntax sugar!
+.. note that the following path is relative! no @-syntax sugar! so be careful or make it flexible.
 
 .. literalinclude :: ../../../amx/proteins/protein.py
   :tab-width: 4
