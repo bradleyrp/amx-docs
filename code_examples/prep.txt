@@ -1,0 +1,36 @@
+┏━━━━┓
+┃menu┃
+┗━━━━┛
+│
+├──quick
+│  ├── 12.. clear_lipidome
+│  ├── 14.. generate_charmm_landscape
+│  ├── 15.. generate_lipidome_restraints
+│  ├── 16.. generate_lipidome_structures
+│  ├── 21.. table
+│  ├── 27.. vmd_cgmd_bilayer
+│  ├── 28.. vmd_original_for_reference
+│  └── 29.. vmd_protein
+├──metarun
+│  ├── 1... bilayer288
+│  ├── 4... bilayer_control_flat_multiply
+│  ├── 5... bilayer_control_multiply
+│  ├── 6... bilayer_protein_aamd_banana
+│  ├── 7... bilayer_protein_aamd_banana_ion_change
+│  ├── 13.. enth-martini-demo
+│  ├── 17.. lipidome
+│  ├── 22.. test-h0
+│  ├── 23.. test_helix0_flat
+│  ├── 24.. trialanine-demo
+│  ├── 25.. ultra
+│  └── 26.. ultra2
+└──run
+   ├── 2... bilayer_control
+   ├── 3... bilayer_control_flat
+   ├── 8... bilayer_protein_adhesion
+   ├── 9... bilayer_protein_adhesion_aamd
+   ├── 10.. bilayer_protein_topology_only
+   ├── 11.. bilayer_release
+   ├── 18.. martinize
+   ├── 19.. multiply
+   └── 20.. protein

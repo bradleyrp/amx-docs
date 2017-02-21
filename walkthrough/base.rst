@@ -1,0 +1,62 @@
+Basecode
+========
+
+.. warning ::
+
+	you should automate this!
+
+The basecode comes with the standard automacs distribution, and is included here so it makes it into the master index.
+This documentation section is included only so that the functions are loaded into the index.
+
+.. automodule:: automacs
+  :members:
+  :undoc-members:
+  :show-inheritance:
+
+.. automodule:: calls
+  :members:
+  :undoc-members:
+  :show-inheritance:
+
+.. automodule:: cli
+  :members:
+  :undoc-members:
+  :show-inheritance:
+
+.. automodule:: common
+  :members:
+  :undoc-members:
+  :show-inheritance:
+
+.. automodule:: force_field_tools
+  :members:
+  :undoc-members:
+  :show-inheritance:
+
+.. automodule:: structure_tools
+  :members:
+  :undoc-members:
+  :show-inheritance:
+
+.. automodule:: topology_tools
+  :members:
+  :undoc-members:
+  :show-inheritance:
+
+.. automodule:: utils
+  :members:
+  :undoc-members:
+  :show-inheritance:
+
+And here are the runner imports.
+
+.. automodule:: control
+  :members:
+  :undoc-members:
+  :show-inheritance:
+
+.. automodule:: acme
+  :members:
+  :undoc-members:
+  :show-inheritance:
+
