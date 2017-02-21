@@ -1,5 +1,3 @@
-.. title :: Concept
-
 Configuration
 =============
 
@@ -10,18 +8,20 @@ GROMACS configuration
 
 Automacs needs to find GROMACS exeuctables at the terminal in order to run your simulations. If you install a single copy of GROMACS for all users, than the default configuration will suffice, but either way, automacs will look for a gromacs configuration file in one of two locations.
 
-Running ``make prep`` or ``make prep?`` for the first time causes automacs to check for the configuration. If it can't find one, it throws an error and asks you to run the configure script. If you run ``make gromacs_config home``, it will write the example configuration file to a hidden file in your home directory at ``~/.automacs.py``. 
+Running :any:`make prep <control.prep>` for the first time causes automacs to check for the configuration. If it can't find one, it throws an error and asks you to run the configure script. If you run :any:`make gromacs_config home <cli.gromacs_config>`, it will write the example configuration file to a hidden file in your home directory at ``~/.automacs.py``. 
 
-You can override the global configuration with a local one, written to ``./gromacs_config.py``, by running ``make gromacs_config local``, or by copying the file to the automacs root directory yourself. 
+You can override the global configuration with a local one, written to ``./gromacs_config.py``, by running :any:`make gromacs_config local <cli.gromacs_config>`, or by copying the file to the automacs root directory yourself. 
 
 .. warning ::
 	
 	finish this
 
+.. _code_config :
+
 Code configuration
 ------------------
 
-Automacs can use a number of different extension modules that contain code. These codes can be directly added to a copy of automacs using a simple command which manipulates the local ``config.py`` file. This file describes all of paths that automacs uses, so that you are free to store your codes wherever you like. Extensions must be added from git repositories using the `make set` utility, which writes ``config.py``.
+Automacs can use a number of different extension modules which can be easily shared with other users by packaging them in `git repositories <https://git-scm.com/>`_. These codes can be directly added to a copy of automacs using a simple command which manipulates the local ``config.py`` file. This file describes all of paths that automacs uses, so that you are free to store your codes wherever you like. Extensions must be added from git repositories using the :any:`make set <acme.set_config>` utility, which writes ``config.py``.
 
 .. code-block :: bash
   
@@ -31,6 +31,8 @@ Automacs can use a number of different extension modules that contain code. Thes
 The ``spot`` argument is unconstrained; you can store the codes whereever you like. We prefer to put minor extensions in the ``inputs`` folder, and major extensions directly in the root directory.  
 
 The ``config.py`` file will change as you add modules and interface functions. A local copy of your config.py is rendered :doc:`here <config>`, as part of the :ref:`live documentation <live_documentation>` of this copy of automacs.
+
+.. _finding_experiments :
 
 **Finding experiments** The ``config.py`` describes the rules for finding experiments. Since many extensions may provide many different standalone experiments and test sets, you may have a large list of experiments. Rather than requiring that each experiment has its own file, you can organize multiple experiments into one :doc:`experiment file <customize_experiments>`. Automacs finds these files according to the ``inputs`` item in ``config.py``. This can be a single string with a path to your experiments file, or a list of paths. Any path can contain wildcards. For the most flexibility, you can also set ``inputs`` to ``'@regex^.*?_expts\\.py$'``, where everything after ``@regex`` is a regular expression for matching *any file* in the automacs subtree. In this example, we require all experiment files to be named e.g. ``my_experiment_group_expts.py``.
 

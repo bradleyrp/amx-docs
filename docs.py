@@ -131,7 +131,7 @@ def docs(refresh=False,clean=False):
 		return
 
 	if not os.path.isdir(build_dn): os.mkdir(build_dn)
-	### else: raise Exception('build directory already exists %s. try `make docs clean` first'%build_dn)
+	else: raise Exception('build directory already exists %s. try `make docs clean` first'%build_dn)
 
 	#---catalog the documentation targets
 	exts = docs_assemble()
@@ -222,6 +222,13 @@ def docs(refresh=False,clean=False):
 		fp.write(index_master_rst%{'components':components_text})
 	#---write the master configuration
 	master_import_text = 'import os,sys\n'
+	#---hard-coded the amx imports
+	master_import_text += '\nsys.path.insert(0,"../../../")'+\
+		'\nimport amx\nimport runner'+\
+		'\nsys.path.insert(0,"../../../amx")'+\
+		'\nsys.path.insert(0,"../../../runner")'+\
+		'\n'
+	#---automatically detect imports from other modules
 	master_import_text += '\n'.join(['sys.path.insert(0,"%s")'%os.path.relpath(spec['path_rel'],build_dn) 
 		for name,spec in exts.items()])
 	with open(os.path.join(build_dn,'conf.py'),'w') as fp:

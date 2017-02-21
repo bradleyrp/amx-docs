@@ -1,6 +1,4 @@
 
-.. title :: Framework
-
 .. _framework:
 
 Framework

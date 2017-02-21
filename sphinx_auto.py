@@ -113,19 +113,17 @@ Indices and tables
 
 index_master_rst = """
 
-.. title:: automacs
+.. title:: amx
 
 ########
 AUTOMACS
 ########
 
-Automacs is a biophysics simulation pipeline designed to help you run 
-scalable, reproducible, and extensible simulations using the popular 
-`GROMACS <www.gromacs.org>`_ integrator. 
-The docuementation :ref:`contents <contents>` below 
-describes how the codes work (and how you should use them). 
-The :ref:`components <components>` section describes the codes available in **this** copy
-of automacs, including an extensions you may have downloaded.
+**AUTOMACS** (a.k.a automacs or just amx) or is a biophysics simulation pipeline designed to help you run scalable, 
+reproducible, and extensible simulations using the popular `GROMACS <www.gromacs.org>`_ integrator. The documentation 
+:ref:`walkthrough <contents>` below describes how the codes work (and how you should use them). The 
+:ref:`components <components>` section describes the codes available in **this particular** copy of automacs, 
+including any extensions you may have downloaded.
 
 .. _contents:
 
