@@ -105,13 +105,16 @@ def docs_assemble():
 	asciitree(bank)
 	return bank
 
-def docs(clean=False):
+def docs(refresh=False,clean=False):
 	"""
 	The current documentation method identifies three components of extensions:
 	1. Submodules: scripts containing functions used by automacs procedures, in the root directory of the extension. These are the core of the extension, and hold functions which are typically exposed to the "global" [note that nothing is global] automacs namespace.
 	2. Codes: sub-submodules in the extension's root directory that might be imported by the submodules. These are more generic, and don't necessarily have to use the wordspace (hence making them easy to poach for other applications, and less tied to the automacs ecosystem by variables like the ``state``).
 	3. Experiments: experiment specificatiojns 
 	"""
+	if refresh: 
+		docs_refresh()
+		return
 
 	docs_dn = 'build_all'
 	build_dn = os.path.join(os.path.dirname(__file__),docs_dn)
@@ -128,7 +131,7 @@ def docs(clean=False):
 		return
 
 	if not os.path.isdir(build_dn): os.mkdir(build_dn)
-	else: raise Exception('build directory already exists %s. try `make docs clean` first'%build_dn)
+	### else: raise Exception('build directory already exists %s. try `make docs clean` first'%build_dn)
 
 	#---catalog the documentation targets
 	exts = docs_assemble()
@@ -139,7 +142,7 @@ def docs(clean=False):
 		dn = spec['path']
 		#---create a new directory
 		spot = os.path.join(build_dn,name)
-		if os.path.isdir(spot): raise Exception('docs directory exists: %s'%spot)
+		### if os.path.isdir(spot): raise Exception('docs directory exists: %s'%spot)
 		os.mkdir(spot)
 		spec_rst = {'name':spec['name'],'path_rel':spec['path_rel'],'git_source':spec['source']}
 		spec_rst['index_toc_items'] = []
@@ -228,3 +231,16 @@ def docs(clean=False):
 	proc = subprocess.check_call('sphinx-build . %s'%master_dn,shell=True,cwd=build_dn)
 	print('[NOTE] documentation available at "file://%s"'%
 		os.path.join(build_dn,master_dn,'index.html'))
+
+def docs_refresh():
+	"""
+	Refresh the documentation if it already exists.
+	This is mostly meant to make the documentation development faster.
+	"""
+	docs_dn = 'build_all'
+	master_dn = 'DOCS'
+	build_dn = os.path.join(os.path.dirname(__file__),docs_dn)
+	if not os.path.isdir(build_dn): raise Exception('[ERROR] cannot find build directory %s. '%build_dn+
+		'make the docs from scratch instead, with `make docs`.')
+	subprocess.check_call('rsync -ariv ../walkthrough/* ./',cwd=build_dn,shell=True)
+	subprocess.check_call('sphinx-build . %s'%master_dn,shell=True,cwd=build_dn)

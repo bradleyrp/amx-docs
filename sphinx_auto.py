@@ -45,6 +45,8 @@ import sys
 import os
 import shlex
 
+sys.dont_write_bytecode = True
+
 extensions = ['sphinx.ext.autodoc','numpydoc']
 
 autodoc_docstring_signature = True
@@ -110,6 +112,9 @@ Indices and tables
 """
 
 index_master_rst = """
+
+.. title:: automacs
+
 ########
 AUTOMACS
 ########
@@ -155,6 +160,8 @@ connections to external codes.
 ******************
 Indices and tables
 ******************
+
+Everything and the kitchen sink can be found in the index. We omit the typical module index because the modules are structured in a somewhat quirky way.
 
 * :ref:`genindex`
 * :ref:`modindex`
