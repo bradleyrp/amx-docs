@@ -1,9 +1,11 @@
+********
 Basecode
-========
+********
 
-.. warning ::
+AMX Module
+==========
 
-	you should automate this!
+.. consider auto-generating this file
 
 The basecode comes with the standard automacs distribution, and is included here so it makes it into the master index.
 This documentation section is included only so that the functions are loaded into the index.
@@ -48,14 +50,30 @@ This documentation section is included only so that the functions are loaded int
   :undoc-members:
   :show-inheritance:
 
-And here are the runner imports.
+Runner
+======
 
 .. automodule:: control
   :members:
   :undoc-members:
   :show-inheritance:
 
+.. automodule:: controlspec
+  :members:
+  :undoc-members:
+  :show-inheritance:
+
 .. automodule:: acme
+  :members:
+  :undoc-members:
+  :show-inheritance:
+
+.. automodule:: makeface
+  :members:
+  :undoc-members:
+  :show-inheritance:
+
+.. automodule:: importer
   :members:
   :undoc-members:
   :show-inheritance:

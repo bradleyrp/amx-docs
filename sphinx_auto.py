@@ -85,6 +85,13 @@ class SimpleDocumenter(autodoc.MethodDocumenter):
 
 def setup(app):
     app.add_autodocumenter(SimpleDocumenter)
+
+#---variable paths
+#---! get these exactly from modules
+rst_prolog = '\\n'.join([
+	'.. |path_runner| replace:: ../../../runner/',
+	])
+
 """
 
 conf_py = conf_base + '\n'+ r"import sys;sys.path.insert(0,'%s')"
@@ -114,54 +121,38 @@ Indices and tables
 index_master_rst = """
 
 .. title:: amx
+.. sectnum::
+	:depth: 3
 
-########
-AUTOMACS
-########
 
-**AUTOMACS** (a.k.a automacs or just amx) or is a biophysics simulation pipeline designed to help you run scalable, 
-reproducible, and extensible simulations using the popular `GROMACS <www.gromacs.org>`_ integrator. The documentation 
-:ref:`walkthrough <contents>` below describes how the codes work (and how you should use them). The 
-:ref:`components <components>` section describes the codes available in **this particular** copy of automacs, 
-including any extensions you may have downloaded.
+
+**"Automatic GROMACS"** (a.k.a. AUTOMACS or just **amx** for short) is a biophysics simulation pipeline designed to help you run scalable, reproducible, and extensible simulations using the popular `GROMACS <www.gromacs.org>`_ integrator. The documentation :ref:`walkthrough <contents>` below describes how the codes work (and how you should use them). The :ref:`components <components>` section describes the codes available in **this particular** copy of automacs, including any extensions you may have downloaded.
+
+Everything but the kitchen sink can be found by :ref:`searching <search>` the :ref:`index <genindex>`. Before starting the walkthrough, you must collect additional automacs modules by running the following :any:`setup <cli.setup>` command with the ``all`` recipe. If this is your first time running automacs on a particular computer, you should also :ref:`configure the gromacs paths <gmx_config>` by running :any:`make gromacs_config <cli.gromacs_config>`.
+
+.. code-block :: bash
+  
+  make gromacs_config local
+  make setup all
 
 .. _contents:
 
-***********
-Walkthrough
-***********
-
-The following sections describe how you can interact with the codes, outline the relatively
-minimal set of design constraints required for extending the codes to new use cases.
+The following sections explain how you can interact with the codes and outline the relatively minimal set of design constraints required for extending the codes to new use cases. The :ref:`components <components>` section at the end includes the "live" documentation for your extension modules.
 
 .. include:: concept.rst
 .. include:: configuration.rst
 .. include:: interface.rst
 .. include:: framework.rst
-.. include:: equilibration.rst
-.. include:: tutorials.rst
 
 .. try: toctree:: :glob: :maxdepth: 1 ... and a list of the top-level rst files if you want them on separate pages
 
 .. _components:
 
-**********
 Components
-**********
+==========
 
-This section catalogs the codes loaded into the current copy of automacs.
-It parses the codes according to the local copy of :doc:`config.py <config>`, which configures the
-connections to external codes.
+This section catalogs the codes loaded into the current copy of automacs. It parses the codes according to the local copy of :doc:`config.py <config>`, which configures the connections to external codes.
 
 %(components)s
 
-******************
-Indices and tables
-******************
-
-Everything and the kitchen sink can be found in the index. We omit the typical module index because the modules are structured in a somewhat quirky way.
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
 """

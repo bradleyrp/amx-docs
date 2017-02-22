@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import os,sys,re,glob,subprocess,shutil
+import os,sys,re,glob,subprocess,shutil,datetime
 
 path = list(sys.path)
 #---connect to runner
@@ -11,7 +11,7 @@ from datapack import asciitree
 from acme import read_config,read_inputs,get_input_files
 sys.path = path
 
-__all__ = ['docs']
+__all__ = ['docs','publish_docs']
 
 #---magic for local import when you run from elsewhere
 sys.path.insert(0,os.path.dirname(os.path.relpath(os.path.abspath(__file__),os.getcwd())))
@@ -209,7 +209,7 @@ def docs(refresh=False,clean=False):
 	components_text = '\n\n'.join([write_rst_toctree([
 		'%s.rst'%(os.path.join('-'.join(exts[name]['path_rel'].split(os.sep)),i)) 
 		for i in components_master[name]],os.path.basename(exts[name]['path_rel']),
-		spacer='=',infotext=(
+		spacer='-',infotext=(
 			"The ``%(name)s`` extension is a component of automacs located "+
 			"at ``%(path_rel)s`` and sourced from ``%(git_source)s``.")%dict(
 				name=exts[name]['name'],
@@ -251,3 +251,54 @@ def docs_refresh():
 		'make the docs from scratch instead, with `make docs`.')
 	subprocess.check_call('rsync -ariv ../walkthrough/* ./',cwd=build_dn,shell=True)
 	subprocess.check_call('sphinx-build . %s'%master_dn,shell=True,cwd=build_dn)
+
+def publish_docs(to=''):
+	"""
+	Prepare documentation for push to github pages. Administrator usage only.
+	WARNING! Make sure you compile the docs manually before you run this!
+
+	NOTES:
+	-----
+	This function will clean then make the docs, and set up the repo to track the github repo.
+	We used a similar procedure to update the docs, and eventually replaced it with the current
+	set of commands to handle the newer versions of git.	
+	The first commit to the repo was created as follows (saved here for posterity):
+		git init .
+		git commit -m 'initial commit' --allow-empty
+		git branch gh-pages
+		git checkout gh-pages
+		touch .nojekyll
+		git add .
+		git commit -am 'added files'
+		git remote add origin <destination>
+		git push -u origin gh-pages
+	"""
+	html_source_path = 'build_all/DOCS'
+	if not to: raise Exception('send destination for documentation via the "to" argument to make')
+	dropspot = os.path.join(os.path.dirname(__file__),html_source_path,'')
+	print('[WARNING] you must make sure the docs are up-to-date before running this!')
+	timestamp = '{:%Y.%m.%d.%H%M}'.format(datetime.datetime.now())
+	cmds = [
+		'git init .',
+		'git checkout -b new_changes',
+		'git add .',
+		'git commit -m "refreshing docs"',
+		'git remote add origin "%s"'%to,
+		'git fetch origin gh-pages',
+		'git checkout gh-pages',
+		('git merge -X theirs -m "refreshing docs" new_changes',
+			'git merge -X theirs --allow-unrelated-histories -m "refreshing docs" new_changes'),
+		'git commit -m "refreshing docs"',
+		'git push --set-upstream origin gh-pages',
+		][:-1]
+	for cmd in cmds: 
+		if type(cmd)==tuple: run_cmds = cmd
+		else: run_cmds = [cmd]
+		for try_num,this_cmd in enumerate(run_cmds):
+			try: subprocess.call(this_cmd,cwd=dropspot,shell=True)		
+			except: 
+				if try_num==0: continue 
+				else: raise Exception('[ERROR] both command options failed!')
+	print('[NOTE] tracking github pages from "%s"'%dropspot)
+	print('[NOTE] admins can push from there to publish documentation changes')
+	print('[NOTE] run "git push --set-upstream origin gh-pages" from there')

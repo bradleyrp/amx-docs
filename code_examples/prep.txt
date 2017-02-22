@@ -1,6 +1,4 @@
-┏━━━━┓
-┃menu┃
-┗━━━━┛
+MENU
 │
 ├──quick
 │  ├── 12.. clear_lipidome
