@@ -38,14 +38,14 @@ Automacs execution is controlled almost entirely by text files which hold :ref:`
 Commands
 --------
 
-As we discused in the :ref:`procedures section <concept_procedures>`, users can run experiments using :any:`make go <control.go>`. To see which experiments are available, use :any:`make prep <control.prep>` which lists them. These are the two most important commands. The :any:`make go <control.go>` command will run :any:`make clean sure <control.clean>` if you send it the ``restart`` flag, (this will clear any old data from the directory, so be careful!) and then immediately run one of the execution commands, depending on the type of experiment, using :any:`make run <control.run>`, :any:`make metarun <control.metarun>`, or :any:`make quick <control.quick>`. 
+As we discused in the :ref:`procedures section <concept_procedures>`, users can run experiments using :any:`make go <control.go>`. To see which experiments are available, use :any:`make prep <control.prep>` which lists them. These are the two most important commands. The :any:`make go <control.go>` command will run :any:`make clean sure <control.clean>` if you send it the ``reset`` flag, (this will clear any old data from the directory, so be careful) and then immediately run one of the execution commands, depending on the type of experiment, using :any:`make run <control.run>`, :any:`make metarun <control.metarun>`, or :any:`make quick <control.quick>`. 
 
 Additions
 ---------
 
 In the :any:`configuration <running_commands>` section we mentioned that the ``commands`` key in ``config.py`` tells automacs where to find new functions. Any paths set in the ``commands`` list are scanned by the :any:`makeface <makeface>` module for python functions. These function names become sub-commands for ``make``. 
 
-Arguments are passed from the ``makefile`` to the python code according to a few simple rules. The functions cannot use ``*args`` or ``**kwargs`` because the interface code performs introspection to send arguments to the function. You can use ``key="value"`` pairs to specify both arguments and keyword arguments. Sending a single flag (e.g. ``clean`` in :any:`make clean sure <control.clean>`) will send ``clean=True`` as a boolean to the function. Order only matters if you are passing arguments (for obvious reasons). The safest bet is to use keyword arguments to avoid mistakes, however functions are straightforward because they only take one argument e.g. :any:`make go <control.go>`.
+Arguments are passed from the ``makefile`` to the python code according to a few simple rules. The functions cannot use ``*args`` or ``**kwargs`` because the interface code performs introspection to send arguments to the function. You can use ``key="value"`` pairs to specify both arguments and keyword arguments. Sending a single flag (e.g. ``sure`` in :any:`make clean sure <control.clean>`) will send ``sure=True`` as a boolean to the function. Order only matters if you are passing arguments (for obvious reasons). The safest bet is to use keyword arguments to avoid mistakes, however functions are straightforward because they only take one argument e.g. :any:`make go <control.go>`.
 
 Most of the automacs utility functions are found in the :any:`command-line interface <cli>` module and the :any:`control <control>` module.
 
