@@ -11,7 +11,7 @@ from datapack import asciitree
 from acme import read_config,read_inputs,get_input_files
 sys.path = path
 
-__all__ = ['docs','publish_docs']
+__all__ = ['docs']
 
 #---magic for local import when you run from elsewhere
 sys.path.insert(0,os.path.dirname(os.path.relpath(os.path.abspath(__file__),os.getcwd())))
@@ -69,20 +69,6 @@ def docs_assemble():
 	"""
 	Get the locations for everything that must be documented.
 	"""
-	#---! previously got modules from inputlib but the config has the last word
-	if False:
-		inputlib = read_inputs()
-		#---collect all directories that hold extensions referenced in the inputlib
-		exts_dns = list(set([i for j in [[os.path.dirname(os.path.abspath(os.path.join(v['cwd'],w))) 
-			for w in v['extensions']] for k,v in inputlib.items() if 'extensions' in v] for i in j]))
-		exts = dict([(re.sub(os.sep,'-',os.path.relpath(i,os.getcwd())),i) for i in exts_dns])
-		#---! need to fix exts to document bilayer with the scripts -- not just bilayer.codes
-		#---! hacked for one example. fix the exts above
-		exts = {'inputs-extras': {'path':'/run/media/rpb/store-omicron/test-acme6-bilayers/inputs/extras'}}
-		for key,val in exts.items():
-			exts[key]['path_rel'] = os.path.relpath(val['path'],os.getcwd())
-			exts[key]['name'] = os.path.basename(exts[key]['path_rel']).capitalize()
-		exts['inputs-extras']['submodules'] = ['amx_extras','GMXStructure','multiply']
 	config = read_config()
 	inputlib = read_inputs()
 	#---exclude parameter files from modules
@@ -105,16 +91,18 @@ def docs_assemble():
 	asciitree(bank)
 	return bank
 
-def docs(refresh=False,clean=False):
+def docs(refresh=False,clean=False,publish=False):
 	"""
 	The current documentation method identifies three components of extensions:
 	1. Submodules: scripts containing functions used by automacs procedures, in the root directory of the extension. These are the core of the extension, and hold functions which are typically exposed to the "global" [note that nothing is global] automacs namespace.
 	2. Codes: sub-submodules in the extension's root directory that might be imported by the submodules. These are more generic, and don't necessarily have to use the wordspace (hence making them easy to poach for other applications, and less tied to the automacs ecosystem by variables like the ``state``).
 	3. Experiments: experiment specificatiojns 
 	"""
-	if refresh: 
-		docs_refresh()
-		return
+	if sum([bool(i) for i in [clean,refresh,publish]])>1: 
+		raise Exception('you can only use one option from: clean, refresh, publish')
+	if refresh: docs_refresh()
+	if publish: publish_docs(to=publish)
+	if refresh or publish: return 
 
 	docs_dn = 'build_all'
 	build_dn = os.path.join(os.path.dirname(__file__),docs_dn)
@@ -142,7 +130,6 @@ def docs(refresh=False,clean=False):
 		dn = spec['path']
 		#---create a new directory
 		spot = os.path.join(build_dn,name)
-		### if os.path.isdir(spot): raise Exception('docs directory exists: %s'%spot)
 		os.mkdir(spot)
 		spec_rst = {'name':spec['name'],'path_rel':spec['path_rel'],'git_source':spec['source']}
 		spec_rst['index_toc_items'] = []
@@ -255,7 +242,7 @@ def docs_refresh():
 def publish_docs(to=''):
 	"""
 	Prepare documentation for push to github pages. Administrator usage only.
-	WARNING! Make sure you compile the docs manually before you run this!
+	Note that you can push this up to the main "automacs" repo and it will only use the gh-pages branch.
 
 	NOTES:
 	-----
@@ -269,7 +256,7 @@ def publish_docs(to=''):
 		git checkout gh-pages
 		touch .nojekyll
 		git add .
-		git commit -am 'added files'
+		git commit -m 'added files'
 		git remote add origin <destination>
 		git push -u origin gh-pages
 	"""
@@ -282,15 +269,14 @@ def publish_docs(to=''):
 		'git init .',
 		'git checkout -b new_changes',
 		'git add .',
-		'git commit -m "refreshing docs"',
-		'git remote add origin "%s"'%to,
+		'git commit -m "refreshing docs on %s"'%timestamp,
+		('git remote add origin "%s"'%to,'echo "[WARNING] remote origin already exists"'),
 		'git fetch origin gh-pages',
 		'git checkout gh-pages',
 		('git merge -X theirs -m "refreshing docs" new_changes',
 			'git merge -X theirs --allow-unrelated-histories -m "refreshing docs" new_changes'),
 		'git commit -m "refreshing docs"',
-		'git push --set-upstream origin gh-pages',
-		][:-1]
+		'git push --set-upstream origin gh-pages',]
 	for cmd in cmds: 
 		if type(cmd)==tuple: run_cmds = cmd
 		else: run_cmds = [cmd]
@@ -298,7 +284,4 @@ def publish_docs(to=''):
 			try: subprocess.call(this_cmd,cwd=dropspot,shell=True)		
 			except: 
 				if try_num==0: continue 
-				else: raise Exception('[ERROR] both command options failed!')
-	print('[NOTE] tracking github pages from "%s"'%dropspot)
-	print('[NOTE] admins can push from there to publish documentation changes')
-	print('[NOTE] run "git push --set-upstream origin gh-pages" from there')
+				else: raise Exception('[ERROR] each command option failed!')
